@@ -69,7 +69,7 @@ MAX_PAGES = 10
 @app.on_event("startup")
 async def startup():
     playwright = await async_playwright().start()
-    browser = await playwright.chromium.launch(headless=True, args=["--no-sandbox"])
+    browser = await playwright.chromium.launch(headless=False, args=["--no-sandbox"])
     context = await browser.new_context()
     app.state.browser = browser
     app.state.context = context
@@ -126,6 +126,9 @@ async def get_instagram_image_and_album_and_reels(post_url, page: Page):
         await page.evaluate(f"window.location.href = '{full_url}'")
 
         # Post yuklanishini kutamiz
+        await page.mouse.click(10, 10)
+
+
         try:
             await page.wait_for_selector("article", timeout=20000)
         except Exception as e:
@@ -199,4 +202,5 @@ async def get_instagram_image_and_album_and_reels(post_url, page: Page):
         return {"error": True, "message": "Server error"}
 
     finally:
+        # await PAGE_POOL.put(page)
         await page.close()
