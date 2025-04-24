@@ -69,7 +69,7 @@ MAX_PAGES = 10
 @app.on_event("startup")
 async def startup():
     playwright = await async_playwright().start()
-    browser = await playwright.chromium.launch(headless=False, args=["--no-sandbox"])
+    browser = await playwright.chromium.launch(headless=True, args=["--no-sandbox"])
     context = await browser.new_context()
     app.state.browser = browser
     app.state.context = context
