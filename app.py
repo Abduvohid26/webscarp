@@ -69,7 +69,7 @@ MAX_PAGES = 10
 @app.on_event("startup")
 async def startup():
     playwright = await async_playwright().start()
-    browser = await playwright.chromium.launch(headless=True, args=["--no-sandbox"])
+    browser = await playwright.chromium.launch(headless=False, args=["--no-sandbox"])
     context = await browser.new_context()
     app.state.browser = browser
     app.state.context = context
@@ -116,21 +116,31 @@ async def get_instagram_image_and_album_and_reels(post_url, page: Page):
     print("📥 Media yuklanmoqda...")
 
     try:
-        match = re.search(r'https://www.instagram.com/p/([^/?]+)', post_url)
-        if not match:
-            return {"error": True, "message": "Invalid URL format"}
+        # match = re.search(r'https://www.instagram.com/p/([^/?]+)', post_url)
+        # if not match:
+        #     return {"error": True, "message": "Invalid URL format"}
 
-        post_path = f"/p/{match.group(1)}/"
-        full_url = f"https://www.instagram.com{post_path}"
+        # post_path = f"/p/{match.group(1)}/"
+        # full_url = f"https://www.instagram.com{post_path}"
 
-        await page.evaluate(f"window.location.href = '{full_url}'")
+        # await page.evaluate(f"window.location.href = '{full_url}'")
 
         # Post yuklanishini kutamiz
+        match = re.search(r"https://www\.instagram\.com/p/([^/?#&]+)", post_url)
+        if not match:
+            return {"error": True, "message": "❌ Noto‘g‘ri URL format"}
+
+        shortcode = match.group(1)
+        full_url = f"https://www.instagram.com/p/{shortcode}/"
+
+        await page.goto(full_url, wait_until="networkidle")
+
+
         await page.mouse.click(10, 10)
 
 
         try:
-            await page.wait_for_selector("article", timeout=20000)
+            await page.wait_for_selector("article", timeout=10000)
         except Exception as e:
             print(f"❌ 'section' elementi topilmadi: {e}")
             return {"error": True, "message": "Invalid response from the server"}
