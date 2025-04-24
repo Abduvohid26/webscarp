@@ -3,7 +3,7 @@
 import asyncio
 import aiohttp
 
-API_URL = "https://videoyukla.uz/instagram/check/"
+API_URL = "http://37.27.210.13:8080/instagram"
 test_url = "https://www.instagram.com/p/DInsfoXtAhU/?utm_source=ig_web_copy_link"
 
 async def fetch(session, idx):
@@ -20,7 +20,7 @@ async def fetch(session, idx):
 
 async def main():
     async with aiohttp.ClientSession() as session:
-        tasks = [fetch(session, i+1) for i in range(5)]
+        tasks = [fetch(session, i+1) for i in range(1)]
         
         for coro in asyncio.as_completed(tasks):
             req, status, data = await coro
